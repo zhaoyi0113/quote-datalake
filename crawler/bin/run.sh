@@ -1,0 +1,1 @@
+scrapy runspider src/quotes_spider.py  -o disk/quotes.json
