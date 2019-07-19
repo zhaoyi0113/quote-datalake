@@ -9,7 +9,7 @@ def handler(event, context):
     process = CrawlerProcess({
         'USER_AGENT': 'Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1)',
         'FEED_FORMAT': 'json',
-        'ITEM_PIPELINES': {'__main__.Pipeline': 1}
+        # 'ITEM_PIPELINES': {'Pipeline': 1}
     })
     process.crawl(QuotesSpider)
     process.start()
