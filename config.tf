@@ -1,6 +1,10 @@
 provider "aws" {
   profile    = "default"
   region     = "ap-southeast-2"
+
+#   endpoints {
+#       lambda = "http://localhost:4567"
+#   }
 }
 
 variable "runtime" {

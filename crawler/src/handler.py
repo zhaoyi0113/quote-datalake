@@ -1,18 +1,24 @@
 from scrapy.crawler import CrawlerProcess
 from quotes_spider import QuotesSpider
 
+print("this is", __name__)
 
 def handler(event, context):
     message = 'Hello {} {}!'.format(event['first_name'],
                                     event['last_name'])
 
-    process = CrawlerProcess({
+    pipeline_setting = {}
+    pipeline_setting[__name__+'.Pipeline'] = 1
+    settings = {
         'USER_AGENT': 'Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1)',
         'FEED_FORMAT': 'json',
-        # 'ITEM_PIPELINES': {'Pipeline': 1}
-    })
+        'ITEM_PIPELINES': {'handler.Pipeline': 1}
+        # 'ITEM_PIPELINES': pipeline_setting
+    }
+    process = CrawlerProcess(settings)
     process.crawl(QuotesSpider)
     process.start()
+    print('finished')
     return {
         'message': message
     }
