@@ -1,11 +1,11 @@
-version: '2.1'
+version: '3.4'
 
 services:
   localstack:
     image: localstack/localstack
     ports:
       - "4567-4583:4567-4583"
-      - '8055:8080'
+      - '8080:8080'
     environment:
       - SERVICES=${SERVICES-lambda }
       - DEBUG=${DEBUG- }
