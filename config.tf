@@ -36,6 +36,16 @@ resource "aws_lambda_function" "test_lambda" {
   }
 }
 
+resource "aws_lambda_function" "praw_crawler" {
+  filename         = "crawler/dist/deploy.zip"
+  function_name    = "praw_crawler"
+  role             = "arn:aws:iam::773592622512:role/LambdaRole"
+  handler          = "praw_crawler.handler"
+  source_code_hash = "${data.archive_file.zipit.output_base64sha256}"
+  runtime          = "${var.runtime}"
+  timeout          = 180
+}
+
 resource "aws_api_gateway_rest_api" "api" {
   name        = "quote-api-gateway"
   description = "Quote Datalake API Gateway"
