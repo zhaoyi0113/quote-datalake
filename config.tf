@@ -19,14 +19,14 @@ variable "s3-bucket" {
   default = "jzhao-datalake-test"
 }
 
-variable "s3-crawler-deploy-key" {
-  default = "deploy/crawler/deploy.zip"
-}
 
 variable "crawler_packaged_file" {
   default = "crawler/dist/deploy.zip"
 }
 
+locals {
+  s3-crawler-deploy-key = "crawler/deploy-${timestamp()}.zip"
+}
 
 data "archive_file" "zipit" {
   type        = "zip"
@@ -36,7 +36,7 @@ data "archive_file" "zipit" {
 
 resource "aws_s3_bucket_object" "file_upload" {
   bucket = "${var.s3-bucket}"
-  key    = "${var.s3-crawler-deploy-key}"
+  key    = "${local.s3-crawler-deploy-key}"
   source = "${data.archive_file.zipit.output_path}"
 
   # The filemd5() function is available in Terraform 0.11.12 and later
@@ -67,7 +67,7 @@ resource "aws_lambda_function" "test_lambda" {
 resource "aws_lambda_function" "praw_crawler" {
   # filename         = "crawler/dist/deploy.zip"
   s3_bucket        = "${var.s3-bucket}"
-  s3_key           = "${var.s3-crawler-deploy-key}"
+  s3_key           = "${aws_s3_bucket_object.file_upload.key}"
   function_name    = "praw_crawler"
   role             = "arn:aws:iam::773592622512:role/LambdaRole"
   handler          = "praw_crawler.handler"
