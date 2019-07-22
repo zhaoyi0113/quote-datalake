@@ -1,5 +1,9 @@
 scrapy==1.6.0
 praw
+jsons
+pandas
+boto3
+numpy
 # asn1crypto==0.23.0
 # attrs>=17.4.0
 # Automat==0.6.0
