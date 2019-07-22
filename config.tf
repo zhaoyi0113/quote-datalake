@@ -27,6 +27,7 @@ resource "aws_lambda_function" "test_lambda" {
   handler          = "handler.handler"
   source_code_hash = "${data.archive_file.zipit.output_base64sha256}"
   runtime          = "${var.runtime}"
+  timeout          = 180
 
   environment {
     variables = {

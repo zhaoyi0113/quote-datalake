@@ -8,6 +8,7 @@ class QuotesSpider(scrapy.Spider):
     ]
 
     def parse(self, response):
+        print('parse quote spider')
         for quote in response.css('div.quote'):
             yield {
                 'text': quote.css('span.text::text').get(),
