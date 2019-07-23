@@ -182,6 +182,16 @@ resource "aws_iam_policy" "iam_policy" {
                 "arn:aws:s3:::${var.s3-bucket}",
                 "arn:aws:s3:::${var.s3-bucket}/*"
             ]
+        },
+        {
+          "Action": [
+            "autoscaling:Describe*",
+            "cloudwatch:*",
+            "logs:*",
+            "sns:*"
+          ],
+          "Effect": "Allow",
+          "Resource": "*"
         }
   ]
 }

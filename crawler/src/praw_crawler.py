@@ -33,6 +33,7 @@ def handler(event, context):
     df = pd.DataFrame(np_info, columns=columns)
     print(df.head())
     upload_to_s3(df)
+    print('return ', info)
     return info
 
 
