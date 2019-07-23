@@ -29,6 +29,23 @@ resource "aws_lambda_function" "praw_crawler" {
   }
 }
 
+resource "aws_lambda_function" "reddit_montior" {
+  s3_bucket        = "${var.s3_bucket}"
+  s3_key           = "${aws_s3_bucket_object.file_upload.key}"
+  function_name    = "reddit_monitor"
+  role             = "${aws_iam_role.role.arn}"
+  handler          = "newpost_monitor.handler"
+  source_code_hash = "${data.archive_file.zipit.output_base64sha256}"
+  runtime          = "${var.runtime}"
+  timeout          = 180
+  environment {
+    variables = {
+      praw_client_id = "${var.praw_client_id}"
+      praw_client_secret = "${var.praw_client_secret}"
+    }
+  }
+}
+
 resource "aws_api_gateway_rest_api" "api" {
   name        = "quote-api-gateway"
   description = "Quote Datalake API Gateway"

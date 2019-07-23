@@ -16,10 +16,10 @@ def createDataframeFromSub(subs):
     topics = []
     for submission in subs:
         row = np.array([submission.id, submission.name, submission.num_comments,
-                        submission.score, submission.title, submission.url])
+                        submission.score, submission.title, submission.url, submission.created_utc])
         topics.append(row)
     np_info = np.array(topics)
-    columns = ['id', 'name', 'num_comments', 'vote', 'title', 'url']
+    columns = ['id', 'name', 'num_comments', 'vote', 'title', 'url', 'created']
     df = pd.DataFrame(np_info, columns=columns)
     return df
 
