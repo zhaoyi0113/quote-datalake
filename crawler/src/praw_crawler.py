@@ -34,7 +34,7 @@ def handler(event, context):
     print(df.head())
     upload_to_s3(df)
     print('return ', info)
-    return info
+    return {'message': 'success'}
 
 
 if __name__ == '__main__':
