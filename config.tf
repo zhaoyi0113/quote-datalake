@@ -24,10 +24,17 @@ variable "crawler_packaged_file" {
   default = "crawler/dist/deploy.zip"
 }
 
+variable "lambda_access" {
+  default = "lambda_access"
+}
+
 locals {
   s3-crawler-deploy-key = "crawler/deploy-${timestamp()}.zip"
 }
 
+##
+# Archive and upload to s3
+##
 data "archive_file" "zipit" {
   type        = "zip"
   source_dir  = "crawler/dist"
@@ -45,13 +52,16 @@ resource "aws_s3_bucket_object" "file_upload" {
   # etag = "${filemd5("path/to/file")}"
 }
 
+##
+# Lambda
+##
 resource "aws_lambda_function" "test_lambda" {
   # filename         = "crawler/dist/deploy.zip"
   s3_bucket = "${var.s3-bucket}"
   s3_key    = "${aws_s3_bucket_object.file_upload.key}"
   # source_code_hash = "${filebase64sha256("file.zip")}"
   function_name    = "quote-crawler"
-  role             = "arn:aws:iam::773592622512:role/LambdaRole"
+  role             = "${aws_iam_role.role.arn}"
   handler          = "handler.handler"
   source_code_hash = "${data.archive_file.zipit.output_base64sha256}"
   runtime          = "${var.runtime}"
@@ -69,7 +79,7 @@ resource "aws_lambda_function" "praw_crawler" {
   s3_bucket        = "${var.s3-bucket}"
   s3_key           = "${aws_s3_bucket_object.file_upload.key}"
   function_name    = "praw_crawler"
-  role             = "arn:aws:iam::773592622512:role/LambdaRole"
+  role             = "${aws_iam_role.role.arn}"
   handler          = "praw_crawler.handler"
   source_code_hash = "${data.archive_file.zipit.output_base64sha256}"
   runtime          = "${var.runtime}"
@@ -87,7 +97,9 @@ resource "aws_api_gateway_resource" "resource" {
   path_part   = "resource"
 }
 
+##
 # API Gateway
+##
 resource "aws_api_gateway_method" "method" {
   rest_api_id   = "${aws_api_gateway_rest_api.api.id}"
   resource_id   = "${aws_api_gateway_resource.resource.id}"
@@ -119,4 +131,65 @@ resource "aws_lambda_permission" "apigw_lambda" {
 
   # More: http://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-control-access-using-iam-policies-to-invoke-api.html
   # source_arn = "arn:aws:execute-api:${var.myregion}:${var.accountId}:${aws_api_gateway_rest_api.api.id}/*/${aws_api_gateway_method.method.http_method}${aws_api_gateway_resource.resource.path}"
+}
+
+##
+# Lambda IAM role
+##
+resource "aws_iam_role" "role" {
+  name = "${var.lambda_access}-role"
+  path = "/"
+
+  assume_role_policy = <<EOF
+{
+
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": "sts:AssumeRole",
+      "Principal": {
+        "Service": "lambda.amazonaws.com"
+      },
+      "Effect": "Allow",
+      "Sid": ""
+    }
+  ]
+}
+EOF
+}
+
+#Created Policy for IAM Role
+resource "aws_iam_policy" "iam_policy" {
+  name = "lambda_access-policy"
+  description = "IAM Policy"
+
+  policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+            "Effect": "Allow",
+            "Action": [
+                "s3:ListAllMyBuckets",
+                "s3:GetBucketLocation"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Effect": "Allow",
+            "Action": "s3:*",
+            "Resource": [
+                "arn:aws:s3:::${var.s3-bucket}",
+                "arn:aws:s3:::${var.s3-bucket}/*"
+            ]
+        }
+  ]
+}
+  EOF
+}
+
+# attach IAM role and the policy
+resource "aws_iam_role_policy_attachment" "iam-policy-attach" {
+  role       = "${aws_iam_role.role.name}"
+  policy_arn = "${aws_iam_policy.iam_policy.arn}"
 }
