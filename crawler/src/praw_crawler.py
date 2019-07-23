@@ -4,20 +4,23 @@ import pandas as pd
 import boto3
 from datetime import datetime
 from io import StringIO
+import os
 
 LIMIT = 1000
 
-reddit = praw.Reddit(client_id='W52YZGBme79BpA',
-                     client_secret='LBrMnomaVlNUI_PXcvMqPOSQtt4',
-                     user_agent='my user agent')
-print('token:', reddit.auth.scopes())
+reddit = praw.Reddit(client_id=os.environ['praw_client_id'],
+                     client_secret=os.environ['praw_client_secret'],
+                     user_agent='lambda')
+
 
 def upload_to_s3(df):
     csv_buffer = StringIO()
     df.to_csv(csv_buffer)
     s3_resource = boto3.resource('s3')
     file_name = 'bestof-' + datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    s3_resource.Object('jzhao-datalake-test', 'netflix/' + file_name + '.csv').put(Body=csv_buffer.getvalue())
+    s3_resource.Object('jzhao-datalake-test', 'netflix/' +
+                       file_name + '.csv').put(Body=csv_buffer.getvalue())
+
 
 def handler(event, context):
     print(reddit.read_only)

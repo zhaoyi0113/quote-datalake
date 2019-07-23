@@ -16,3 +16,11 @@ variable "crawler_packaged_file" {
 variable "lambda_access" {
   default = "lambda_access"
 }
+
+variable "praw_client_id" {
+  
+}
+
+variable "praw_client_secret" {
+  
+}

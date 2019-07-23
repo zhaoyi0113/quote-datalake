@@ -1,29 +1,18 @@
-
-
 ##
 # Lambda
 ##
 resource "aws_lambda_function" "test_lambda" {
-  # filename         = "crawler/dist/deploy.zip"
   s3_bucket = "${var.s3_bucket}"
   s3_key    = "${aws_s3_bucket_object.file_upload.key}"
-  # source_code_hash = "${filebase64sha256("file.zip")}"
   function_name    = "quote-crawler"
   role             = "${aws_iam_role.role.arn}"
   handler          = "handler.handler"
   source_code_hash = "${data.archive_file.zipit.output_base64sha256}"
   runtime          = "${var.runtime}"
   timeout          = 180
-
-  environment {
-    variables = {
-      foo = "bar"
-    }
-  }
 }
 
 resource "aws_lambda_function" "praw_crawler" {
-  # filename         = "crawler/dist/deploy.zip"
   s3_bucket        = "${var.s3_bucket}"
   s3_key           = "${aws_s3_bucket_object.file_upload.key}"
   function_name    = "praw_crawler"
@@ -32,6 +21,13 @@ resource "aws_lambda_function" "praw_crawler" {
   source_code_hash = "${data.archive_file.zipit.output_base64sha256}"
   runtime          = "${var.runtime}"
   timeout          = 180
+  environment {
+    variables = {
+      foo = "bar"
+      praw_client_id = "${var.praw_client_id}"
+      praw_client_secret = "${var.praw_client_secret}"
+    }
+  }
 }
 
 resource "aws_api_gateway_rest_api" "api" {
