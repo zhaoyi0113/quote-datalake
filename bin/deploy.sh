@@ -8,4 +8,4 @@ cd dist
 docker run -v $(pwd):/outputs -it --rm lambci/lambda:build-python3.6 pip install -r /outputs/requirements.txt -t /outputs/
 # zip -r deploy.zip *
 cd ../..
-terraform apply -lock=true -auto-approve
+terraform apply -lock=true -auto-approve terraform
