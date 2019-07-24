@@ -5,6 +5,7 @@ import os
 from io import StringIO
 import boto3
 from datetime import datetime
+import json
 
 S3_BUCKET = 'jzhao-datalake-test'
 
@@ -37,8 +38,13 @@ def upload_to_s3(df):
 def upload_subs_to_s3(subs, topic):
     json_data = []
     for sub in subs:
-        json_data.append(vars(sub))
+        sub_dict = vars(sub)
+        sub_dict.pop('_reddit')
+        sub_dict.pop('subreddit')
+        sub_dict.pop('author')
+        print(sub_dict)
+        json_data.append(json.dumps(sub_dict))
     s3_resource = boto3.resource('s3')
-    file_name = 'reddit-' + datetime.now().strftime("%Y-%m-%d %H:%M:%S")+'.txt'
+    file_name = 'reddit-' + datetime.now().strftime("%Y-%m-%d %H:%M:%S")+'.json'
     s3_resource.Object(S3_BUCKET, topic + '/' + file_name).put(Body=str(json_data))
     print('upload file ' + file_name+ ' to s3')

@@ -18,6 +18,7 @@ def check_new_posts(reddit, topic):
         if post.id not in seen_posts:
             seen_posts.append(post.id)
             new_posts.append(post)
+    print('saved seen posts id:', seen_posts)
     print('check new posts:', len(new_posts))
     if len(new_posts) > 0:
         notify(new_posts, topic)
