@@ -34,11 +34,11 @@ def upload_to_s3(df):
                        file_name).put(Body=csv_buffer.getvalue())
     print('upload file ' + file_name + ' to s3')
 
-def upload_subs_to_s3(subs):
+def upload_subs_to_s3(subs, topic):
     json_data = []
     for sub in subs:
         json_data.append(vars(sub))
     s3_resource = boto3.resource('s3')
     file_name = 'reddit-' + datetime.now().strftime("%Y-%m-%d %H:%M:%S")+'.txt'
-    s3_resource.Object(S3_BUCKET, 'reddit/' + file_name).put(Body=str(json_data))
+    s3_resource.Object(S3_BUCKET, topic + '/' + file_name).put(Body=str(json_data))
     print('upload file ' + file_name+ ' to s3')

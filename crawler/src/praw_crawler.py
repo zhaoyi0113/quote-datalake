@@ -28,7 +28,7 @@ def handler(event, context):
     np_info = np.array(info)
     columns = ['id', 'name', 'num_comments', 'vote', 'title', 'url', 'created']
     # df = pd.DataFrame(np_info, columns=columns)
-    upload_subs_to_s3(topics)
+    upload_subs_to_s3(topics, 'NetflixBestOf')
     # print(df.head())
     # upload_to_s3(df)
     # print('return ', info)

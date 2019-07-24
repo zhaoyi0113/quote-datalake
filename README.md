@@ -10,6 +10,6 @@ Web crawler is implemented in `python`.
 
 The cloud infrastructure is managed by `Terraform`.
 
-# Resources
+## Resources
 
 - https://medium.com/@zhaoyi0113/terraform-step-by-step-tutorial-e29e165407b3
