@@ -2,7 +2,7 @@ import praw
 import numpy as np
 import pandas as pd
 import boto3
-from utils import createReddit, createDataframeFromSub, upload_to_s3
+from utils import createReddit, createDataframeFromSub, upload_subs_to_s3
 import time
 
 def handler(event, context):
@@ -20,10 +20,8 @@ def check_new_posts(reddit, sub):
         notify(new_posts)
 
 def notify(subs):
-    print('send notify for ', subs)
-    df = createDataframeFromSub(subs)
-    print(df.head(5))
-    upload_to_s3(df)
+    print('send notify for ', len(subs), ' submissions')
+    upload_subs_to_s3(subs)
 
 seen_posts = []
 

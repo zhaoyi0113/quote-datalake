@@ -6,6 +6,8 @@ from io import StringIO
 import boto3
 from datetime import datetime
 
+S3_BUCKET = 'jzhao-datalake-test'
+
 def createReddit():
     reddit = praw.Reddit(client_id=os.environ['praw_client_id'],
                          client_secret=os.environ['praw_client_secret'],
@@ -28,6 +30,15 @@ def upload_to_s3(df):
     df.to_csv(csv_buffer)
     s3_resource = boto3.resource('s3')
     file_name = 'bestof-' + datetime.now().strftime("%Y-%m-%d %H:%M:%S")+'.csv'
-    s3_resource.Object('jzhao-datalake-test', 'netflix/' +
+    s3_resource.Object(S3_BUCKET, 'netflix/' +
                        file_name).put(Body=csv_buffer.getvalue())
     print('upload file ' + file_name + ' to s3')
+
+def upload_subs_to_s3(subs):
+    json_data = []
+    for sub in subs:
+        json_data.append(vars(sub))
+    s3_resource = boto3.resource('s3')
+    file_name = 'reddit-' + datetime.now().strftime("%Y-%m-%d %H:%M:%S")+'.txt'
+    s3_resource.Object(S3_BUCKET, 'reddit/' + file_name).put(Body=str(json_data))
+    print('upload file ' + file_name+ ' to s3')
