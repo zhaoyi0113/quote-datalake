@@ -2,10 +2,10 @@ import praw
 import numpy as np
 import pandas as pd
 import boto3
-from utils import createReddit, createDataframeFromSub, upload_subs_to_s3
+from utils import createReddit, createDataframeFromSub, upload_subs_to_s3, query_submission_id
 import time
 
-LIMIT = 1000
+LIMIT = 1
 
 def handler(event, context):
     reddit = createReddit()
@@ -17,8 +17,8 @@ def handler(event, context):
 def check_new_posts(reddit, topic):
     new_posts = []
     for post in reddit.subreddit(topic).new(limit=LIMIT):
-        if post.id not in seen_posts:
-            seen_posts.append(post.id)
+        if post.name not in seen_posts:
+            seen_posts.append(post.name)
             new_posts.append(post)
     print('saved seen posts id:', seen_posts)
     print('check new posts:', len(new_posts))
@@ -26,6 +26,8 @@ def check_new_posts(reddit, topic):
         notify(new_posts, topic)
 
 def notify(subs, topic):
+    filtered = [x for x in subs if query_submission_id(x.name) == 0]
+    print('filtered:', filtered)
     print('send notify for ', len(subs), ' submissions')
     upload_subs_to_s3(subs, topic)
 
