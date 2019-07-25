@@ -57,10 +57,17 @@ def upload_subs_to_s3(subs, topic):
     print('upload file ' + file_name + ' to s3 bucket ' + S3_BUCKET)
 
 
-def query_submission_id(name):
+def query_submission_id(names):
     client = boto3.client('athena', region_name='ap-southeast-2')
+    condition = '('
+    for name in names:
+        if len(condition) > 1:
+            condition = condition + ','
+        condition = condition + '\'' + name + '\''
+    condition += ')'
+    print('condition=', condition)
     execution = client.start_query_execution(
-        QueryString='select name from "target_reddit_movie" where name=\'' + name + "'",
+        QueryString='select name from "target_reddit_movie" where name in ' + condition,
         QueryExecutionContext={
             'Database': ATHENA_DB_NAME
         },

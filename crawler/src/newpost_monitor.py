@@ -4,7 +4,7 @@ import pandas as pd
 from utils import createReddit, createDataframeFromSub, upload_subs_to_s3, query_submission_id
 import time
 
-LIMIT = 1000
+LIMIT = 100
 
 def handler(event, context):
     reddit = createReddit()
@@ -15,13 +15,16 @@ def handler(event, context):
 
 def check_new_posts(reddit, topic):
     new_posts = []
+    new_posts_id = []
     for post in reddit.subreddit(topic).new(limit=LIMIT):
         if post.name not in seen_posts:
             seen_posts.append(post.name)
             new_posts.append(post)
+            new_posts_id.append(post.name)
     print('saved seen posts id:', seen_posts)
     print('check new posts:', len(new_posts))
-    if len(new_posts) > 0:
+    existed_count = query_submission_id(new_posts_id)
+    if len(new_posts) > 0 and existed_count == 0:
         notify(new_posts, topic)
 
 def notify(subs, topic):

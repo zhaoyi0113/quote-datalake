@@ -28,3 +28,8 @@ variable "praw_client_secret" {
   
 }
 
+variable "lambda_timeout" {
+  default = 900
+}
+
+

@@ -9,7 +9,7 @@ resource "aws_lambda_function" "test_lambda" {
   handler          = "handler.handler"
   source_code_hash = "${data.archive_file.zipit.output_base64sha256}"
   runtime          = "${var.runtime}"
-  timeout          = 180
+  timeout          = "${var.lambda_timeout}"
 }
 
 resource "aws_lambda_function" "praw_crawler" {
@@ -20,7 +20,7 @@ resource "aws_lambda_function" "praw_crawler" {
   handler          = "praw_crawler.handler"
   source_code_hash = "${data.archive_file.zipit.output_base64sha256}"
   runtime          = "${var.runtime}"
-  timeout          = 180
+  timeout          = "${var.lambda_timeout}"
   environment {
     variables = {
       praw_client_id = "${var.praw_client_id}"
@@ -37,7 +37,7 @@ resource "aws_lambda_function" "reddit_montior" {
   handler          = "newpost_monitor.handler"
   source_code_hash = "${data.archive_file.zipit.output_base64sha256}"
   runtime          = "${var.runtime}"
-  timeout          = 180
+  timeout          = "${var.lambda_timeout}"
   environment {
     variables = {
       praw_client_id = "${var.praw_client_id}"
