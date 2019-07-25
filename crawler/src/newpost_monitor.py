@@ -5,6 +5,8 @@ import boto3
 from utils import createReddit, createDataframeFromSub, upload_subs_to_s3
 import time
 
+LIMIT = 1000
+
 def handler(event, context):
     reddit = createReddit()
     topic = 'movies'
@@ -14,7 +16,7 @@ def handler(event, context):
 
 def check_new_posts(reddit, topic):
     new_posts = []
-    for post in reddit.subreddit(topic).new(limit=10):
+    for post in reddit.subreddit(topic).new(limit=LIMIT):
         if post.id not in seen_posts:
             seen_posts.append(post.id)
             new_posts.append(post)
@@ -31,5 +33,5 @@ seen_posts = []
 
 if __name__ == '__main__':
     while True:
-        handler({'topic': 'bestof'}, None)
+        handler({'topic': 'news'}, None)
         time.sleep(5)

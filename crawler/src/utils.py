@@ -42,9 +42,9 @@ def upload_subs_to_s3(subs, topic):
         sub_dict.pop('_reddit')
         sub_dict.pop('subreddit')
         sub_dict.pop('author')
-        print(sub_dict)
-        json_data.append(json.dumps(sub_dict))
+        json_data.append(sub_dict)
     s3_resource = boto3.resource('s3')
     file_name = 'reddit-' + datetime.now().strftime("%Y-%m-%d %H:%M:%S")+'.json'
-    s3_resource.Object(S3_BUCKET, topic + '/' + file_name).put(Body=str(json_data))
+    print(json.dumps(json_data))
+    s3_resource.Object(S3_BUCKET, topic + '/' + file_name).put(Body=json.dumps(json_data))
     print('upload file ' + file_name+ ' to s3')
