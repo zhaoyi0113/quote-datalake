@@ -5,7 +5,11 @@ variable "region" {
   default = "ap-southeast-2"
 }
 variable "s3_bucket" {
-  default = "jzhao-datalake-test"
+  default = "datalake-demo-jzhao"
+}
+
+variable "athena-bucket" {
+  default = "athena-datalake"
 }
 
 variable "crawler_packaged_file" {
@@ -23,3 +27,4 @@ variable "praw_client_id" {
 variable "praw_client_secret" {
   
 }
+

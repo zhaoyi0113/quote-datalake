@@ -1,7 +1,6 @@
 import praw
 import numpy as np
 import pandas as pd
-import boto3
 from utils import createReddit, createDataframeFromSub, upload_subs_to_s3, query_submission_id
 import time
 

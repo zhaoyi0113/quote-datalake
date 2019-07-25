@@ -19,6 +19,7 @@ resource "aws_s3_bucket_object" "deploy_folder" {
   bucket = "${var.s3_bucket}"
   key = "crawler"
   source = "/dev/null"
+  depends_on = [aws_s3_bucket.bucket]
 }
 resource "aws_s3_bucket_object" "file_upload" {
   bucket = "${var.s3_bucket}"

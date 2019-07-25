@@ -94,7 +94,7 @@ resource "aws_glue_job" "reddit_movie_job" {
 
 # upload spark script to s3 bucket
 resource "aws_s3_bucket_object" "upload_glue_etl_script" {
-  bucket = "${var.s3_bucket}"
+  bucket = "${aws_s3_bucket.bucket.id}"
   key = "scripts/${var.reddit_movie_etl_script}"
   source = "crawler/src/glue/${var.reddit_movie_etl_script}"
 

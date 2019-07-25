@@ -42,9 +42,23 @@ resource "aws_lambda_function" "reddit_montior" {
     variables = {
       praw_client_id = "${var.praw_client_id}"
       praw_client_secret = "${var.praw_client_secret}"
+      s3_bucket = "${aws_s3_bucket.bucket.id}"
+      athena_bucket = "${aws_s3_bucket.athena-bucket.id}"
     }
   }
 }
+
+resource "aws_lambda_function" "trigger_glue_crawler" {
+  s3_bucket        = "${var.s3_bucket}"
+  s3_key           = "${aws_s3_bucket_object.file_upload.key}"
+  function_name    = "trigger_glue_crawler"
+  role             = "${aws_iam_role.role.arn}"
+  handler          = "trigger_glue_crawler.handler"
+  source_code_hash = "${data.archive_file.zipit.output_base64sha256}"
+  runtime          = "${var.runtime}"
+  timeout          = 180
+}
+
 
 resource "aws_api_gateway_rest_api" "api" {
   name        = "quote-api-gateway"
@@ -126,4 +140,9 @@ resource "aws_iam_policy" "iam_policy" {
 resource "aws_iam_role_policy_attachment" "iam-policy-attach" {
   role       = "${aws_iam_role.role.name}"
   policy_arn = "${aws_iam_policy.iam_policy.arn}"
+}
+
+resource "aws_iam_role_policy_attachment" "iam-athena-policy-attach" {
+  role       = "${aws_iam_role.role.name}"
+  policy_arn = "${aws_iam_policy.athena_policy.arn}"
 }

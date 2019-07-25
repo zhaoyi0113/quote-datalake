@@ -8,8 +8,8 @@ from datetime import datetime
 import time
 import json
 
-S3_BUCKET = 'jzhao-datalake-test'
-ATHENA_RESULT_BUCKET = 'athena-datalake'
+S3_BUCKET = os.environ['s3_bucket']
+ATHENA_RESULT_BUCKET = os.environ['athena_bucket']
 ATHENA_DB_NAME = 'video'
 
 def createReddit():
@@ -54,7 +54,7 @@ def upload_subs_to_s3(subs, topic):
     print(json.dumps(json_data))
     s3_resource.Object(S3_BUCKET, topic + '/' +
                        file_name).put(Body=json.dumps(json_data))
-    print('upload file ' + file_name + ' to s3')
+    print('upload file ' + file_name + ' to s3 bucket ' + S3_BUCKET)
 
 
 def query_submission_id(name):

@@ -16,3 +16,28 @@ resource "aws_iam_policy" "s3_policy" {
 }
 EOF
 }
+
+resource "aws_iam_policy" "athena_policy" {
+  name = "athena_policy"
+  policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": [
+        "athena:*"
+      ],
+      "Effect": "Allow",
+      "Resource": "*"
+    },
+    {
+      "Action": [
+        "s3:*"
+      ],
+      "Effect": "Allow",
+      "Resource": "*"
+    } 
+  ]
+}
+EOF
+}
