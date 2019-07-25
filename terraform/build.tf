@@ -3,7 +3,7 @@
 ##
 
 locals {
-  s3-crawler-deploy-key = "crawler/deploy-${timestamp()}.zip"
+  s3-crawler-deploy-key = "deploy-${timestamp()}.zip"
 }
 
 ##
@@ -15,9 +15,14 @@ data "archive_file" "zipit" {
   output_path = "${var.crawler_packaged_file}"
 }
 
+resource "aws_s3_bucket_object" "deploy_folder" {
+  bucket = "${var.s3_bucket}"
+  key = "crawler"
+  source = "/dev/null"
+}
 resource "aws_s3_bucket_object" "file_upload" {
   bucket = "${var.s3_bucket}"
-  key    = "${local.s3-crawler-deploy-key}"
+  key    = "${aws_s3_bucket_object.deploy_folder.key}/${local.s3-crawler-deploy-key}"
   source = "${data.archive_file.zipit.output_path}"
 
   # The filemd5() function is available in Terraform 0.11.12 and later
