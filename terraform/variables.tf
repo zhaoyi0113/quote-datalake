@@ -8,7 +8,6 @@ variable "s3_bucket" {
   default = "jzhao-datalake-test"
 }
 
-
 variable "crawler_packaged_file" {
   default = "crawler/dist/deploy.zip"
 }
