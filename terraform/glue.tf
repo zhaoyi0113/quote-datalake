@@ -18,13 +18,26 @@
 # EOF
 # }
 
+data "aws_iam_role" "AWSGlueServiceRoleDefault" {
+  name = "AWSGlueServiceRoleDefault"
+}
+
+variable "glue_service_role" {
+  default = "AWSGlueServiceRoleDefault"
+}
+
+variable "reddit_movie_etl_script" {
+  default = "reddit_movie_etl.py"
+}
+
+
 resource "aws_iam_role_policy_attachment" "glue_service" {
-  role       = "AWSGlueServiceRoleDefault"
+  role       = "${var.glue_service_role}"
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSGlueServiceRole"
 }
 
 resource "aws_iam_role_policy_attachment" "glue_service_s3" {
-  role       = "AWSGlueServiceRoleDefault"
+  role       = "${var.glue_service_role}"
   policy_arn = "${aws_iam_policy.s3_policy.arn}"
 }
 
@@ -37,7 +50,7 @@ resource "aws_glue_catalog_database" "video" {
 resource "aws_glue_crawler" "reddit_movie_crawler" {
   database_name = "${aws_glue_catalog_database.video.name}"
   name          = "reddit_movie"
-  role          = "AWSGlueServiceRoleDefault"
+  role          = "${var.glue_service_role}"
   table_prefix  = "reddit"
   classifiers   = ["${aws_glue_classifier.json_array.name}"]
   configuration = <<EOF
@@ -61,4 +74,32 @@ resource "aws_glue_classifier" "json_array" {
   json_classifier {
     json_path = "$[*]"
   }
+}
+
+# glue job
+resource "aws_glue_job" "reddit_movie_job" {
+  name = "reddit_movies"
+  role_arn = "${data.aws_iam_role.AWSGlueServiceRoleDefault.arn}"
+
+  command {
+    # script_location = "s3://${var.s3_bucket}/scripts/reddit_movie.py"
+    script_location = "s3://${var.s3_bucket}/${aws_s3_bucket_object.upload_glue_etl_script.key}"
+  }
+  default_arguments = {
+    "--job-language" = "python"
+    "--TempDir"= "s3://${var.s3_bucket}/temporary"
+  }
+  depends_on = [aws_s3_bucket_object.upload_glue_etl_script]
+}
+
+# upload spark script to s3 bucket
+resource "aws_s3_bucket_object" "upload_glue_etl_script" {
+  bucket = "${var.s3_bucket}"
+  key = "scripts/${var.reddit_movie_etl_script}"
+  source = "crawler/src/glue/${var.reddit_movie_etl_script}"
+
+  # The filemd5() function is available in Terraform 0.11.12 and later
+  # For Terraform 0.11.11 and earlier, use the md5() function and the file() function:
+  # etag = "${md5(file("path/to/file"))}"
+  # etag = "${filemd5("path/to/file")}"
 }

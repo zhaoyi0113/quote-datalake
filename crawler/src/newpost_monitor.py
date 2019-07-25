@@ -5,7 +5,7 @@ import boto3
 from utils import createReddit, createDataframeFromSub, upload_subs_to_s3, query_submission_id
 import time
 
-LIMIT = 1
+LIMIT = 1000
 
 def handler(event, context):
     reddit = createReddit()

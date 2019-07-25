@@ -10,7 +10,7 @@ import json
 
 S3_BUCKET = 'jzhao-datalake-test'
 ATHENA_RESULT_BUCKET = 'athena-datalake'
-ATHENA_DB_NAME = 'video1'
+ATHENA_DB_NAME = 'video'
 
 def createReddit():
     reddit = praw.Reddit(client_id=os.environ['praw_client_id'],
@@ -92,7 +92,3 @@ def load_csv_from_s3(bucket, key):
     obj = client.get_object(Bucket=bucket, Key=key)
     dataframe = pd.read_csv(obj['Body'])
     return dataframe
-
-
-ret = query_submission_id('t3_chjv3n')
-print('size ', ret)
