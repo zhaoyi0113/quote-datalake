@@ -49,7 +49,7 @@ resource "aws_glue_catalog_database" "video" {
 # glue crawler
 resource "aws_glue_crawler" "reddit_movie_crawler" {
   database_name = "${aws_glue_catalog_database.video.name}"
-  name          = "reddit_movie"
+  name          = "${var.glue_crawler_name}"
   role          = "${var.glue_service_role}"
   table_prefix  = "reddit"
   classifiers   = ["${aws_glue_classifier.json_array.name}"]

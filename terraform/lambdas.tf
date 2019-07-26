@@ -57,6 +57,11 @@ resource "aws_lambda_function" "trigger_glue_crawler" {
   source_code_hash = "${data.archive_file.zipit.output_base64sha256}"
   runtime          = "${var.runtime}"
   timeout          = 180
+  environment {
+    variables = {
+      glue_crawler_name = "${var.glue_crawler_name}"
+    }
+  }
 }
 
 

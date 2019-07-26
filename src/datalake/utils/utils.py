@@ -57,38 +57,41 @@ def upload_subs_to_s3(subs, topic):
 
 
 def query_submission_id(names):
-    client = boto3.client('athena', region_name='ap-southeast-2')
-    condition = '('
-    for name in names:
-        if len(condition) > 1:
-            condition = condition + ','
-        condition = condition + '\'' + name + '\''
-    condition += ')'
-    print('condition=', condition)
-    execution = client.start_query_execution(
-        QueryString='select name from "target_reddit_movie" where name in ' + condition + ' group by name',
-        QueryExecutionContext={
-            'Database': ATHENA_DB_NAME
-        },
-        ResultConfiguration={
-            'OutputLocation': 's3://' + ATHENA_RESULT_BUCKET + '/athena-results'
-        }
-    )
-    execution_id = execution['QueryExecutionId']
-    while True:
-        response = client.get_query_execution(QueryExecutionId=execution_id)
-        print('query response ', response)
-        if 'QueryExecution' in response and \
-                'Status' in response['QueryExecution'] and \
-                'State' in response['QueryExecution']['Status']:
-            state = response['QueryExecution']['Status']['State']
-            if state == 'FAILED':
-                return []
-            elif state == 'SUCCEEDED':
-                df = load_csv_from_s3(ATHENA_RESULT_BUCKET, 'athena-results/' +
-                                      response['QueryExecution']['QueryExecutionId']+'.csv')
-                return df['name'].values.tolist()
-        time.sleep(5)
+    try:
+        client = boto3.client('athena', region_name='ap-southeast-2')
+        condition = '('
+        for name in names:
+            if len(condition) > 1:
+                condition = condition + ','
+            condition = condition + '\'' + name + '\''
+        condition += ')'
+        print('condition=', condition)
+        execution = client.start_query_execution(
+            QueryString='select name from "target_reddit_movie" where name in ' + condition + ' group by name',
+            QueryExecutionContext={
+                'Database': ATHENA_DB_NAME
+            },
+            ResultConfiguration={
+                'OutputLocation': 's3://' + ATHENA_RESULT_BUCKET + '/athena-results'
+            }
+        )
+        execution_id = execution['QueryExecutionId']
+        while True:
+            response = client.get_query_execution(QueryExecutionId=execution_id)
+            print('query response ', response)
+            if 'QueryExecution' in response and \
+                    'Status' in response['QueryExecution'] and \
+                    'State' in response['QueryExecution']['Status']:
+                state = response['QueryExecution']['Status']['State']
+                if state == 'FAILED':
+                    return []
+                elif state == 'SUCCEEDED':
+                    df = load_csv_from_s3(ATHENA_RESULT_BUCKET, 'athena-results/' +
+                                        response['QueryExecution']['QueryExecutionId']+'.csv')
+                    return df['name'].values.tolist()
+            time.sleep(5)
+    except Exception as e:
+        print(e)
     return []
 
 

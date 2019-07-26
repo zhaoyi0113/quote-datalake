@@ -32,4 +32,7 @@ variable "lambda_timeout" {
   default = 900
 }
 
+variable "glue_crawler_name" {
+  default = "reddit_movie"
+}
 
