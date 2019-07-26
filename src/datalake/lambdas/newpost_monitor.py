@@ -3,8 +3,10 @@ import numpy as np
 import pandas as pd
 from datalake.utils import utils
 import time
+import logging
 
 LIMIT = 100
+
 
 def handler(event, context):
     reddit = utils.createReddit()
@@ -12,6 +14,7 @@ def handler(event, context):
     if 'topic' in event:
         topic = event['topic']
     check_new_posts(reddit, topic)
+
 
 def check_new_posts(reddit, topic):
     new_posts = []
@@ -21,18 +24,21 @@ def check_new_posts(reddit, topic):
             seen_posts.append(post.name)
             new_posts.append(post)
             new_posts_id.append(post.name)
-    print('saved seen posts id:', seen_posts)
-    print('check new posts:', len(new_posts))
+    logging.info('saved seen posts id:' + seen_posts)
+    logging.info('check new posts:' + len(new_posts))
     if len(new_posts) > 0:
         existed_names = utils.query_submission_id(new_posts_id)
-        print('existed name:', existed_names)
-        filtered = list(filter(lambda n: filter(lambda x: x != n.name, existed_names), new_posts))
-        print('filtered ', len(filtered))
+        logging.info('existed name:' + existed_names)
+        filtered = list(filter(lambda n: filter(
+            lambda x: x != n.name, existed_names), new_posts))
+        logging.info('filtered ' + len(filtered))
         notify(filtered, topic)
 
+
 def notify(subs, topic):
-    print('send notify for ', len(subs), ' submissions')
+    logging.info('send notify for ' + len(subs) + ' submissions')
     utils.upload_subs_to_s3(subs, topic)
+
 
 seen_posts = []
 
