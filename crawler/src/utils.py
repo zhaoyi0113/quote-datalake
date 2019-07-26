@@ -51,7 +51,6 @@ def upload_subs_to_s3(subs, topic):
         json_data.append(sub_dict)
     s3_resource = boto3.resource('s3')
     file_name = 'reddit-' + datetime.now().strftime("%Y-%m-%d %H:%M:%S")+'.json'
-    print(json.dumps(json_data))
     s3_resource.Object(S3_BUCKET, topic + '/' +
                        file_name).put(Body=json.dumps(json_data))
     print('upload file ' + file_name + ' to s3 bucket ' + S3_BUCKET)
@@ -67,7 +66,7 @@ def query_submission_id(names):
     condition += ')'
     print('condition=', condition)
     execution = client.start_query_execution(
-        QueryString='select name from "target_reddit_movie" where name in ' + condition,
+        QueryString='select name from "target_reddit_movie" where name in ' + condition + ' group by name',
         QueryExecutionContext={
             'Database': ATHENA_DB_NAME
         },
@@ -84,14 +83,13 @@ def query_submission_id(names):
                 'State' in response['QueryExecution']['Status']:
             state = response['QueryExecution']['Status']['State']
             if state == 'FAILED':
-                return 0
+                return []
             elif state == 'SUCCEEDED':
-                # s3_path = response['QueryExecution']['ResultConfiguration']['OutputLocation']
                 df = load_csv_from_s3(ATHENA_RESULT_BUCKET, 'athena-results/' +
                                       response['QueryExecution']['QueryExecutionId']+'.csv')
-                return df.shape[0]
+                return df['name'].values.tolist()
         time.sleep(5)
-    return 0
+    return []
 
 
 def load_csv_from_s3(bucket, key):

@@ -23,13 +23,14 @@ def check_new_posts(reddit, topic):
             new_posts_id.append(post.name)
     print('saved seen posts id:', seen_posts)
     print('check new posts:', len(new_posts))
-    existed_count = query_submission_id(new_posts_id)
-    if len(new_posts) > 0 and existed_count == 0:
-        notify(new_posts, topic)
+    if len(new_posts) > 0:
+        existed_names = query_submission_id(new_posts_id)
+        print('existed name:', existed_names)
+        filtered = list(filter(lambda n: filter(lambda x: x != n.name, existed_names), new_posts))
+        print('filtered ', len(filtered))
+        notify(filtered, topic)
 
 def notify(subs, topic):
-    filtered = [x for x in subs if query_submission_id(x.name) == 0]
-    print('filtered:', filtered)
     print('send notify for ', len(subs), ' submissions')
     upload_subs_to_s3(subs, topic)
 
