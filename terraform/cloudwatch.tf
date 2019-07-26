@@ -25,3 +25,34 @@ resource "aws_lambda_permission" "allow_cloudwatch_to_call_check_reddit" {
     principal = "events.amazonaws.com"
     source_arn = "${aws_cloudwatch_event_rule.every_one_minutes.arn}"
 }
+
+## add event to listen on glue crawler event
+resource "aws_cloudwatch_event_rule" "crawler" {
+  name        = "glue_crawler_complete"
+  description = "Capture Glue Crawler complete"
+
+  event_pattern = <<PATTERN
+{
+  "detail-type": [
+        "Glue Crawler State Change"
+    ],
+    "source": [
+        "aws.glue"
+    ],
+    "detail": {
+        "crawlerName": [
+            "${var.glue_crawler_name}"
+        ],
+        "state": [
+            "Succeeded"
+        ]
+    }
+}
+PATTERN
+}
+
+resource "aws_cloudwatch_event_target" "trigger_glue_job_lambda" {
+  rule = "${aws_cloudwatch_event_rule.crawler.name}"
+  target_id = "SendToLambda"
+  arn = "${aws_lambda_function.trigger_glue_job.arn}"
+}
