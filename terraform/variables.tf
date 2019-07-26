@@ -21,11 +21,11 @@ variable "lambda_access" {
 }
 
 variable "praw_client_id" {
-  
+
 }
 
 variable "praw_client_secret" {
-  
+
 }
 
 variable "lambda_timeout" {
@@ -38,4 +38,8 @@ variable "glue_crawler_name" {
 
 variable "lambda_python_deps_file" {
   default = "lambda_layer.zip"
+}
+
+variable "glue_move_job_name" {
+  default = "reddit_movies"
 }

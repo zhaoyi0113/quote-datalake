@@ -78,7 +78,7 @@ resource "aws_glue_classifier" "json_array" {
 
 # glue job
 resource "aws_glue_job" "reddit_movie_job" {
-  name = "reddit_movies"
+  name = "${var.glue_move_job_name}"
   role_arn = "${data.aws_iam_role.AWSGlueServiceRoleDefault.arn}"
 
   command {

@@ -68,6 +68,18 @@ resource "aws_lambda_function" "trigger_glue_crawler" {
   }
 }
 
+resource "aws_lambda_function" "trigger_glue_job" {
+  s3_bucket = "${var.s3_bucket}"
+  s3_key           = "${aws_s3_bucket_object.file_upload.key}"
+  function_name    = "trigger_glue_job"
+  layers           = ["${aws_lambda_layer_version.lambda_python_deps_layer.arn}"]
+  role             = "${aws_iam_role.role.arn}"
+  handler          = "datalake.lambdas.trigger_glue_job.handler"
+  source_code_hash = "${data.archive_file.zipit.output_base64sha256}"
+  runtime          = "${var.runtime}"
+  timeout          = 180
+}
+
 
 resource "aws_api_gateway_rest_api" "api" {
   name        = "quote-api-gateway"
