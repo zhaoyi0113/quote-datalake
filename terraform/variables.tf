@@ -13,7 +13,7 @@ variable "athena-bucket" {
 }
 
 variable "crawler_packaged_file" {
-  default = "crawler/dist/deploy.zip"
+  default = "src/dist/deploy.zip"
 }
 
 variable "lambda_access" {

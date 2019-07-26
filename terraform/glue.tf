@@ -96,7 +96,7 @@ resource "aws_glue_job" "reddit_movie_job" {
 resource "aws_s3_bucket_object" "upload_glue_etl_script" {
   bucket = "${aws_s3_bucket.bucket.id}"
   key = "scripts/${var.reddit_movie_etl_script}"
-  source = "crawler/src/glue/${var.reddit_movie_etl_script}"
+  source = "crawler/datalake/glue/${var.reddit_movie_etl_script}"
 
   # The filemd5() function is available in Terraform 0.11.12 and later
   # For Terraform 0.11.11 and earlier, use the md5() function and the file() function:

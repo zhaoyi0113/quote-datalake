@@ -11,7 +11,7 @@ locals {
 ##
 data "archive_file" "zipit" {
   type        = "zip"
-  source_dir  = "crawler/dist"
+  source_dir  = "src/dist"
   output_path = "${var.crawler_packaged_file}"
 }
 

@@ -1,13 +1,13 @@
 import praw
 import numpy as np
 import pandas as pd
-from utils import createReddit, createDataframeFromSub, upload_subs_to_s3, query_submission_id
+from datalake.utils import utils
 import time
 
 LIMIT = 100
 
 def handler(event, context):
-    reddit = createReddit()
+    reddit = utils.createReddit()
     topic = 'movies'
     if 'topic' in event:
         topic = event['topic']
@@ -24,7 +24,7 @@ def check_new_posts(reddit, topic):
     print('saved seen posts id:', seen_posts)
     print('check new posts:', len(new_posts))
     if len(new_posts) > 0:
-        existed_names = query_submission_id(new_posts_id)
+        existed_names = utils.query_submission_id(new_posts_id)
         print('existed name:', existed_names)
         filtered = list(filter(lambda n: filter(lambda x: x != n.name, existed_names), new_posts))
         print('filtered ', len(filtered))
@@ -32,7 +32,7 @@ def check_new_posts(reddit, topic):
 
 def notify(subs, topic):
     print('send notify for ', len(subs), ' submissions')
-    upload_subs_to_s3(subs, topic)
+    utils.upload_subs_to_s3(subs, topic)
 
 seen_posts = []
 

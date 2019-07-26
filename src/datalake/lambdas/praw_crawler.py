@@ -5,7 +5,7 @@ import boto3
 from datetime import datetime
 from io import StringIO
 import os
-from utils import upload_to_s3, upload_subs_to_s3
+from utils import utils
 import json
 
 LIMIT = 1
@@ -28,7 +28,7 @@ def handler(event, context):
     np_info = np.array(info)
     columns = ['id', 'name', 'num_comments', 'vote', 'title', 'url', 'created']
     # df = pd.DataFrame(np_info, columns=columns)
-    upload_subs_to_s3(topics, 'NetflixBestOf')
+    utils.upload_subs_to_s3(topics, 'NetflixBestOf')
     # print(df.head())
     # upload_to_s3(df)
     # print('return ', info)
