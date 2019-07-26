@@ -53,7 +53,7 @@ def upload_subs_to_s3(subs, topic):
     file_name = 'reddit-' + datetime.now().strftime("%Y-%m-%d %H:%M:%S")+'.json'
     s3_resource.Object(S3_BUCKET, topic + '/' +
                        file_name).put(Body=json.dumps(json_data))
-    print('upload file ' + file_name + ' to s3 bucket ' + S3_BUCKET)
+    print('upload file ' + file_name + ' to s3 bucket ' + S3_BUCKET + '/' + topic)
 
 
 def query_submission_id(names):
