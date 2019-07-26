@@ -25,7 +25,7 @@ resource "aws_s3_bucket_object" "file_upload" {
   bucket = "${var.s3_bucket}"
   key    = "${aws_s3_bucket_object.deploy_folder.key}/${local.s3-crawler-deploy-key}"
   source = "${data.archive_file.zipit.output_path}"
-
+  etag = "${filemd5("${data.archive_file.zipit.output_path}")}"
   # The filemd5() function is available in Terraform 0.11.12 and later
   # For Terraform 0.11.11 and earlier, use the md5() function and the file() function:
   # etag = "${md5(file("path/to/file"))}"

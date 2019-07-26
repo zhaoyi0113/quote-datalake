@@ -36,3 +36,6 @@ variable "glue_crawler_name" {
   default = "reddit_movie"
 }
 
+variable "lambda_python_deps_file" {
+  default = "lambda_layer.zip"
+}

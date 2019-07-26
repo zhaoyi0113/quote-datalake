@@ -1,4 +1,5 @@
 dist
+build
 .terraform
 *.pyc
 *.pyo

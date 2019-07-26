@@ -82,7 +82,6 @@ resource "aws_glue_job" "reddit_movie_job" {
   role_arn = "${data.aws_iam_role.AWSGlueServiceRoleDefault.arn}"
 
   command {
-    # script_location = "s3://${var.s3_bucket}/scripts/reddit_movie.py"
     script_location = "s3://${var.s3_bucket}/${aws_s3_bucket_object.upload_glue_etl_script.key}"
   }
   default_arguments = {

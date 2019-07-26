@@ -2,8 +2,8 @@
 # Lambda
 ##
 resource "aws_lambda_function" "test_lambda" {
-  s3_bucket = "${var.s3_bucket}"
-  s3_key    = "${aws_s3_bucket_object.file_upload.key}"
+  s3_bucket        = "${var.s3_bucket}"
+  s3_key           = "${aws_s3_bucket_object.file_upload.key}"
   function_name    = "quote-crawler"
   role             = "${aws_iam_role.role.arn}"
   handler          = "datalake.lambdas.handler.handler"
@@ -23,7 +23,7 @@ resource "aws_lambda_function" "praw_crawler" {
   timeout          = "${var.lambda_timeout}"
   environment {
     variables = {
-      praw_client_id = "${var.praw_client_id}"
+      praw_client_id     = "${var.praw_client_id}"
       praw_client_secret = "${var.praw_client_secret}"
     }
   }
@@ -38,12 +38,13 @@ resource "aws_lambda_function" "reddit_montior" {
   source_code_hash = "${data.archive_file.zipit.output_base64sha256}"
   runtime          = "${var.runtime}"
   timeout          = "${var.lambda_timeout}"
+  layers           = ["${aws_lambda_layer_version.lambda_python_deps_layer.arn}"]
   environment {
     variables = {
-      praw_client_id = "${var.praw_client_id}"
+      praw_client_id     = "${var.praw_client_id}"
       praw_client_secret = "${var.praw_client_secret}"
-      s3_bucket = "${aws_s3_bucket.bucket.id}"
-      athena_bucket = "${aws_s3_bucket.athena-bucket.id}"
+      s3_bucket          = "${aws_s3_bucket.bucket.id}"
+      athena_bucket      = "${aws_s3_bucket.athena-bucket.id}"
     }
   }
 }
@@ -103,27 +104,27 @@ EOF
 
 # attach IAM role and the policy
 resource "aws_iam_role_policy_attachment" "iam-policy-attach" {
-  role       = "${aws_iam_role.role.name}"
+  role = "${aws_iam_role.role.name}"
   policy_arn = "${aws_iam_policy.iam_policy.arn}"
 }
 
 resource "aws_iam_role_policy_attachment" "iam-athena-policy-attach" {
-  role       = "${aws_iam_role.role.name}"
+  role = "${aws_iam_role.role.name}"
   policy_arn = "${aws_iam_policy.athena_policy.arn}"
 }
 
 resource "aws_iam_role_policy_attachment" "iam-glue-policy-attach" {
-  role   = "${aws_iam_role.role.name}"
+  role = "${aws_iam_role.role.name}"
   policy_arn = "${aws_iam_policy.glue_policy.arn}"
 }
 
 
 resource "aws_lambda_permission" "allow_bucket_trigger_lambda" {
-  statement_id  = "AllowExecutionFromS3Bucket"
-  action        = "lambda:InvokeFunction"
+  statement_id = "AllowExecutionFromS3Bucket"
+  action = "lambda:InvokeFunction"
   function_name = "${aws_lambda_function.trigger_glue_crawler.arn}"
-  principal     = "s3.amazonaws.com"
-  source_arn    = "${aws_s3_bucket.bucket.arn}"
+  principal = "s3.amazonaws.com"
+  source_arn = "${aws_s3_bucket.bucket.arn}"
 }
 
 resource "aws_s3_bucket_notification" "bucket_notification" {
@@ -131,13 +132,27 @@ resource "aws_s3_bucket_notification" "bucket_notification" {
 
   lambda_function {
     lambda_function_arn = "${aws_lambda_function.trigger_glue_crawler.arn}"
-    events              = ["s3:ObjectCreated:*"]
-    filter_prefix       = "movies/"
+    events = ["s3:ObjectCreated:*"]
+    filter_prefix = "movies/"
   }
 
   lambda_function {
     lambda_function_arn = "${aws_lambda_function.trigger_glue_crawler.arn}"
-    events              = ["s3:ObjectCreated:*"]
-    filter_prefix       = "NetflixBestOf/"
+    events = ["s3:ObjectCreated:*"]
+    filter_prefix = "NetflixBestOf/"
   }
+}
+
+resource "aws_lambda_layer_version" "lambda_python_deps_layer" {
+  s3_bucket = "${var.s3_bucket}"
+  s3_key = "${aws_s3_bucket_object.python_layer_file_upload.key}"
+  layer_name = "lambda_python_deps_layer"
+  compatible_runtimes = ["${var.runtime}"]
+}
+
+resource "aws_s3_bucket_object" "python_layer_file_upload" {
+  bucket = "${var.s3_bucket}"
+  key = "${aws_s3_bucket_object.deploy_folder.key}/${var.lambda_python_deps_file}"
+  source = "build/${var.lambda_python_deps_file}"
+  etag = "${filemd5("build/${var.lambda_python_deps_file}")}"
 }
