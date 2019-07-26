@@ -11,8 +11,12 @@ def handler(event, context):
         if 'Records' in event and len(event['Records']) > 0:
             key = event['Records'][0]['s3']['object']['key']
             print('upload a new file ', key)
-            glue.start_crawler(Name=crawler_name)
-            print('trigger glue crawler ', crawler_name)
+            crawler = glue.get_crawler(Name=crawler_name)
+            if crawler['Crawler']['State'] == 'READY':
+                glue.start_crawler(Name=crawler_name)
+                print('trigger glue crawler ', crawler_name)
+            else:
+                print('crawler status ', crawler['Crawler']['State'], ' is not ready.')
         else:
             print('invalid event')
     except Exception as e:
