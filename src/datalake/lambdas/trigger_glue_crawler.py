@@ -19,7 +19,7 @@ def handler(event, context):
                 glue.start_crawler(Name=crawler_name)
                 logger.info('trigger glue crawler ' + crawler_name)
             else:
-                logger.info('crawler status ' + crawler['Crawler']['State'], ' is not ready.')
+                logger.info('crawler status ' + str(crawler['Crawler']['State']) + ' is not ready.')
         else:
             logger.info('invalid event')
     except Exception as e:

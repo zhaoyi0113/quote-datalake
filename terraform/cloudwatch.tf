@@ -28,7 +28,7 @@ resource "aws_lambda_permission" "allow_cloudwatch_to_call_check_reddit" {
 
 ## add event to listen on glue crawler event
 resource "aws_cloudwatch_event_rule" "crawler" {
-  name        = "glue_crawler_complete"
+  name        = "glue_crawler_log"
   description = "Capture Glue Crawler complete"
 
   event_pattern = <<PATTERN
@@ -38,15 +38,7 @@ resource "aws_cloudwatch_event_rule" "crawler" {
     ],
     "source": [
         "aws.glue"
-    ],
-    "detail": {
-        "crawlerName": [
-            "${var.glue_crawler_name}"
-        ],
-        "state": [
-            "Succeeded"
-        ]
-    }
+    ]
 }
 PATTERN
 }
