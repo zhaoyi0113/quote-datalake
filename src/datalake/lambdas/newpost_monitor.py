@@ -29,6 +29,7 @@ def check_new_posts(reddit, topic):
     logger.info('check new posts:' + str(len(new_posts)))
     if len(new_posts) > 0:
         existed_names = utils.query_submission_id(new_posts_id)
+        print('existed post names:', existed_names)
         filtered = list(filter(lambda n: filter(
             lambda x: x != n.name, existed_names), new_posts))
         logger.info('filtered ' + str(len(filtered)))
