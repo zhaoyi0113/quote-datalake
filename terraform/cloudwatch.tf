@@ -52,7 +52,7 @@ resource "aws_cloudwatch_event_target" "trigger_glue_job_lambda" {
 resource "aws_cloudwatch_event_target" "log_glue_crawler_result" {
   rule = "${aws_cloudwatch_event_rule.crawler.name}"
   target_id = "LogCrawler"
-  arn = "${aws_cloudwatch_log_group.grue_crawler_log_group.arn}"
+  arn = "${substr(aws_cloudwatch_log_group.grue_crawler_log_group.arn, 0, length(aws_cloudwatch_log_group.grue_crawler_log_group.arn) - 2)}"
 }
 
 resource "aws_cloudwatch_log_group" "grue_crawler_log_group" {
