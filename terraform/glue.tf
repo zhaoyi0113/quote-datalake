@@ -86,7 +86,11 @@ resource "aws_glue_job" "reddit_movie_job" {
   }
   default_arguments = {
     "--job-language" = "python"
-    "--TempDir"= "s3://${var.s3_bucket}/temporary"
+    "--TempDir" = "s3://${var.s3_bucket}/temporary"
+    "--enable-continuous-cloudwatch-log" = "true"
+    "--enable-continuous-log-filter" = "true"
+    "--enable-metrics" = "true"
+
   }
   depends_on = [aws_s3_bucket_object.upload_glue_etl_script]
 }
