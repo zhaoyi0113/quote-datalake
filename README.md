@@ -10,7 +10,7 @@ The web crawler is implemented in `praw`, a `Python` library used to crawl data 
 
 ## Glue Crawler
 
-Glue crawler is different than the `web crawler`. It is actually a piece of logic to discover the data schema from your s3 bucket. It works like a crawler to dig into your bucket and use customised and build-in classifier to find the schema. The customised classifier is defined in `Terraform` configuration file: `glue.tf`. The output of this step is a datalog saved in Glue database table for later analyse in `Athena`.
+Glue crawler is different than the `web crawler`. It is actually a piece of logic to discover the data schema from your s3 bucket. It works like a crawler to dig into your bucket and use customised and build-in classifier to find the schema. The customised classifier is defined in `Terraform` configuration file: `glue.tf`. The output of this step is a catalog saved in Glue database table for later analyse in `Athena`.
 
 ## Glue Job
 
