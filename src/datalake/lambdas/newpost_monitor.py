@@ -30,9 +30,11 @@ def check_new_posts(reddit, topic):
     if len(new_posts) > 0:
         existed_names = utils.query_submission_id(new_posts_id)
         print('existed post names:', existed_names)
-        filtered = list(filter(lambda n: filter(
-            lambda x: x != n.name, existed_names), new_posts))
-        logger.info('filtered ' + str(len(filtered)))
+        filtered = []
+        for p in new_posts:
+            if p.name not in existed_names:
+                filtered.append(p)
+        print('filtered ' + str(len(filtered)))
         notify(filtered, topic)
 
 
@@ -45,5 +47,5 @@ seen_posts = []
 
 if __name__ == '__main__':
     while True:
-        handler({'topic': 'news'}, None)
+        handler({'topic': 'movies'}, None)
         time.sleep(5)
