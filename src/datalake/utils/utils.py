@@ -67,7 +67,7 @@ def query_submission_id(names):
         condition += ')'
         print('condition=', condition)
         execution = client.start_query_execution(
-            QueryString='select name from "target_reddit_movie" where name in ' + condition + ' group by name',
+            QueryString='select name from "target_reddit_movie_94afb58a37452b7c33dd171fdcead213" where name in ' + condition + ' group by name',
             QueryExecutionContext={
                 'Database': ATHENA_DB_NAME
             },

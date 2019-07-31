@@ -67,6 +67,23 @@ EOF
   }
 }
 
+resource "aws_glue_crawler" "reddit_movie_target_crawler" {
+  database_name = "${aws_glue_catalog_database.video.name}"
+  name = "${var.glue_target_crawler_name}"
+  role = "${var.glue_service_role}"
+  table_prefix = "target_"
+  classifiers = ["${aws_glue_classifier.json_array.name}"]
+  configuration = <<EOF
+{
+    "Version": 1.0,
+    "Grouping": { "TableGroupingPolicy": "CombineCompatibleSchemas" }
+}
+EOF
+  s3_target {
+    path = "s3://${var.s3_bucket}/glue_target/reddit_movie"
+  }
+}
+
 # glue classifier
 resource "aws_glue_classifier" "json_array" {
   name = "json_array"
@@ -78,18 +95,18 @@ resource "aws_glue_classifier" "json_array" {
 
 # glue job
 resource "aws_glue_job" "reddit_movie_job" {
-  name = "${var.glue_move_job_name}"
+  name     = "${var.glue_movie_job_name}"
   role_arn = "${data.aws_iam_role.AWSGlueServiceRoleDefault.arn}"
 
   command {
     script_location = "s3://${var.s3_bucket}/${aws_s3_bucket_object.upload_glue_etl_script.key}"
   }
   default_arguments = {
-    "--job-language" = "python"
-    "--TempDir" = "s3://${var.s3_bucket}/temporary"
+    "--job-language"                     = "python"
+    "--TempDir"                          = "s3://${var.s3_bucket}/temporary"
     "--enable-continuous-cloudwatch-log" = "true"
-    "--enable-continuous-log-filter" = "true"
-    "--enable-metrics" = "true"
+    "--enable-continuous-log-filter"     = "true"
+    "--enable-metrics"                   = "true"
 
   }
   depends_on = [aws_s3_bucket_object.upload_glue_etl_script]
@@ -98,7 +115,7 @@ resource "aws_glue_job" "reddit_movie_job" {
 # upload spark script to s3 bucket
 resource "aws_s3_bucket_object" "upload_glue_etl_script" {
   bucket = "${aws_s3_bucket.bucket.id}"
-  key = "scripts/${var.reddit_movie_etl_script}"
+  key    = "scripts/${var.reddit_movie_etl_script}"
   source = "src/datalake/glue/${var.reddit_movie_etl_script}"
-  etag = "${filemd5("src/datalake/glue/${var.reddit_movie_etl_script}")}"
+  etag   = "${filemd5("src/datalake/glue/${var.reddit_movie_etl_script}")}"
 }

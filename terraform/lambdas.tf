@@ -64,6 +64,7 @@ resource "aws_lambda_function" "trigger_glue_crawler" {
   environment {
     variables = {
       glue_crawler_name = "${var.glue_crawler_name}"
+      glue_target_crawler_name = "${var.glue_target_crawler_name}"
     }
   }
 }

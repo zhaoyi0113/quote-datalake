@@ -43,16 +43,38 @@ resource "aws_cloudwatch_event_rule" "crawler" {
 PATTERN
 }
 
+## add event rule to listen on glue job event
+resource "aws_cloudwatch_event_rule" "glue_job" {
+  name = "glue_job_event"
+  description = "Listen on glue job state change"
+  event_pattern = <<PATTERN
+{
+    "source": [
+        "aws.glue"
+    ],
+        "detail-type": [
+            "Glue Job State Change"
+        ]
+}
+PATTERN
+}
+
 resource "aws_cloudwatch_event_target" "trigger_glue_job_lambda" {
-  rule = "${aws_cloudwatch_event_rule.crawler.name}"
+  rule      = "${aws_cloudwatch_event_rule.crawler.name}"
   target_id = "SendToLambda"
-  arn = "${aws_lambda_function.trigger_glue_job.arn}"
+  arn       = "${aws_lambda_function.trigger_glue_job.arn}"
 }
 
 resource "aws_cloudwatch_event_target" "log_glue_crawler_result" {
-  rule = "${aws_cloudwatch_event_rule.crawler.name}"
+  rule      = "${aws_cloudwatch_event_rule.crawler.name}"
   target_id = "LogCrawler"
-  arn = "${substr(aws_cloudwatch_log_group.grue_crawler_log_group.arn, 0, length(aws_cloudwatch_log_group.grue_crawler_log_group.arn) - 2)}"
+  arn       = "${substr(aws_cloudwatch_log_group.grue_crawler_log_group.arn, 0, length(aws_cloudwatch_log_group.grue_crawler_log_group.arn) - 2)}"
+}
+
+resource "aws_cloudwatch_event_target" "trigger_glue_crawler_after_etl" {
+    rule      = "${aws_cloudwatch_event_rule.glue_job.name}"
+    target_id = "JobStateChange"
+    arn       = "${aws_lambda_function.trigger_glue_crawler.arn}"
 }
 
 resource "aws_cloudwatch_log_group" "grue_crawler_log_group" {
