@@ -107,6 +107,7 @@ resource "aws_glue_job" "reddit_movie_job" {
     "--enable-continuous-cloudwatch-log" = "true"
     "--enable-continuous-log-filter"     = "true"
     "--enable-metrics"                   = "true"
+    "--job-bookmark-option"              = "job-bookmark-enable"
 
   }
   depends_on = [aws_s3_bucket_object.upload_glue_etl_script]
