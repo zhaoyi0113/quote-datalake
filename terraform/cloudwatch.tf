@@ -18,6 +18,13 @@ resource "aws_cloudwatch_event_target" "search_netflixbestof_reddit_every_one_mi
   input     = "{\"topic\": \"NetflixBestOf\"}"
 }
 
+resource "aws_cloudwatch_event_target" "search_news_reddit_on_schedule" {
+  rule      = "${aws_cloudwatch_event_rule.every_one_minutes.name}"
+  target_id = "search_news_reddit"
+  arn       = "${aws_lambda_function.reddit_montior.arn}"
+  input     = "{\"topic\": \"news\"}"
+}
+
 resource "aws_lambda_permission" "allow_cloudwatch_to_call_check_reddit" {
   statement_id  = "AllowExecutionFromCloudWatch"
   action        = "lambda:InvokeFunction"

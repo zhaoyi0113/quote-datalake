@@ -65,6 +65,9 @@ EOF
   s3_target {
     path = "s3://${var.s3_bucket}/movies"
   }
+  s3_target {
+    path = "s3://${var.s3_bucket}/news"
+  }
 }
 
 resource "aws_glue_crawler" "reddit_movie_target_crawler" {
