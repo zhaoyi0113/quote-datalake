@@ -57,3 +57,4 @@ In order to run this demo, you will need to install:
 ## Resources
 
 - https://medium.com/@zhaoyi0113/terraform-step-by-step-tutorial-e29e165407b3
+- https://medium.com/@zhaoyi0113/building-serverless-data-lake-pipeline-on-aws-6c86883ed713
