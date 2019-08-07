@@ -27,7 +27,7 @@ applymapping1 = ApplyMapping.apply(frame = datasource0, mappings = [("selftext",
 
 try:
     df = applymapping1.toDF().drop_duplicates(['name'])
-    dynamicFrame = DynamicFrame.fromDF(df, glueContext, "frame")
+    applymapping1 = DynamicFrame.fromDF(df, glueContext, "frame")
 except Exception as e:
     print('remove duplicate name column failed:', e)
 
