@@ -22,7 +22,7 @@ def handler(event, context):
             # This is s3 event
             crawler_name = os.environ['glue_crawler_name']
             key = event['Records'][0]['s3']['object']['key']
-            logger.info('upload a new file ' + key)
+            logger.info('get the newly uploaded file:' + key)
             trigger_crawler(crawler_name)
         elif 'source' in event and event['source'] == 'aws.glue':
             # This is glue job event
