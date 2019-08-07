@@ -94,6 +94,16 @@ resource "aws_iam_policy" "iam_policy" {
           ],
           "Effect": "Allow",
           "Resource": "*"
+        },
+        {
+          "Effect": "Allow",
+          "Action": [
+           "ssm:DescribeParameters",
+           "ssm:GetParameters",
+           "ssm:GetParameter",
+           "ssm:GetParametersByPath"
+          ],
+          "Resource": "*"
         }
   ]
 }

@@ -1,6 +1,15 @@
 variable "runtime" {
   default = "python3.6"
 }
+
+variable "project_name" {
+  default = "datalake"
+}
+
+variable "env" {
+  default = "dev"
+}
+
 variable "region" {
   default = "ap-southeast-2"
 }
@@ -47,4 +56,8 @@ variable "lambda_python_deps_file" {
 
 variable "glue_movie_job_name" {
   default = "reddit_movies"
+}
+
+variable "athena_catalog_db_name" {
+  default = "video"
 }

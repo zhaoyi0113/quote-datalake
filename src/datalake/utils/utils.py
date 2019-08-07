@@ -3,14 +3,20 @@ import numpy as np
 import pandas as pd
 import os
 from io import StringIO
-import boto3
+import boto3, configparser
 from datetime import datetime
 import time
 import json
 
-S3_BUCKET = os.environ['s3_bucket']
-ATHENA_RESULT_BUCKET = os.environ['athena_bucket']
-ATHENA_DB_NAME = 'video'
+
+client = boto3.client('ssm')
+
+paramBasePath = '/' + os.environ['project_name'] + '/' + os.environ['env']
+S3_BUCKET = client.get_parameter(Name=paramBasePath + '/s3_bucket')['Parameter']['Value']
+ATHENA_RESULT_BUCKET = client.get_parameter(Name = paramBasePath + '/athena_bucket')['Parameter']['Value']
+ATHENA_DB_NAME = client.get_parameter(Name = paramBasePath + '/athena_catalog_db_name')['Parameter']['Value']
+
+print('parameters:',S3_BUCKET, ATHENA_RESULT_BUCKET, ATHENA_DB_NAME)
 
 def createReddit():
     reddit = praw.Reddit(client_id=os.environ['praw_client_id'],

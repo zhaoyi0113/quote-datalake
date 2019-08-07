@@ -1,35 +1,35 @@
 ##
 # Lambda
 ##
-resource "aws_lambda_function" "test_lambda" {
-  s3_bucket        = "${var.s3_bucket}"
-  s3_key           = "${aws_s3_bucket_object.file_upload.key}"
-  function_name    = "quote-crawler"
-  role             = "${aws_iam_role.role.arn}"
-  handler          = "datalake.lambdas.handler.handler"
-  source_code_hash = "${data.archive_file.zipit.output_base64sha256}"
-  runtime          = "${var.runtime}"
-  timeout          = "${var.lambda_timeout}"
-  layers           = ["${aws_lambda_layer_version.lambda_python_deps_layer.arn}"]
-}
+# resource "aws_lambda_function" "test_lambda" {
+#   s3_bucket        = "${var.s3_bucket}"
+#   s3_key           = "${aws_s3_bucket_object.file_upload.key}"
+#   function_name    = "quote-crawler"
+#   role             = "${aws_iam_role.role.arn}"
+#   handler          = "datalake.lambdas.handler.handler"
+#   source_code_hash = "${data.archive_file.zipit.output_base64sha256}"
+#   runtime          = "${var.runtime}"
+#   timeout          = "${var.lambda_timeout}"
+#   layers           = ["${aws_lambda_layer_version.lambda_python_deps_layer.arn}"]
+# }
 
-resource "aws_lambda_function" "praw_crawler" {
-  s3_bucket        = "${var.s3_bucket}"
-  s3_key           = "${aws_s3_bucket_object.file_upload.key}"
-  function_name    = "praw_crawler"
-  role             = "${aws_iam_role.role.arn}"
-  handler          = "datalake.lambdas.praw_crawler.handler"
-  source_code_hash = "${data.archive_file.zipit.output_base64sha256}"
-  runtime          = "${var.runtime}"
-  layers           = ["${aws_lambda_layer_version.lambda_python_deps_layer.arn}"]
-  timeout          = "${var.lambda_timeout}"
-  environment {
-    variables = {
-      praw_client_id     = "${var.praw_client_id}"
-      praw_client_secret = "${var.praw_client_secret}"
-    }
-  }
-}
+# resource "aws_lambda_function" "praw_crawler" {
+#   s3_bucket        = "${var.s3_bucket}"
+#   s3_key           = "${aws_s3_bucket_object.file_upload.key}"
+#   function_name    = "praw_crawler"
+#   role             = "${aws_iam_role.role.arn}"
+#   handler          = "datalake.lambdas.praw_crawler.handler"
+#   source_code_hash = "${data.archive_file.zipit.output_base64sha256}"
+#   runtime          = "${var.runtime}"
+#   layers           = ["${aws_lambda_layer_version.lambda_python_deps_layer.arn}"]
+#   timeout          = "${var.lambda_timeout}"
+#   environment {
+#     variables = {
+#       praw_client_id     = "${var.praw_client_id}"
+#       praw_client_secret = "${var.praw_client_secret}"
+#     }
+#   }
+# }
 
 resource "aws_lambda_function" "reddit_montior" {
   s3_bucket        = "${var.s3_bucket}"
@@ -40,13 +40,14 @@ resource "aws_lambda_function" "reddit_montior" {
   source_code_hash = "${data.archive_file.zipit.output_base64sha256}"
   runtime          = "${var.runtime}"
   timeout          = "${var.lambda_timeout}"
+  memory_size      = "512"
   layers           = ["${aws_lambda_layer_version.lambda_python_deps_layer.arn}"]
   environment {
     variables = {
       praw_client_id     = "${var.praw_client_id}"
       praw_client_secret = "${var.praw_client_secret}"
-      s3_bucket          = "${aws_s3_bucket.bucket.id}"
-      athena_bucket      = "${aws_s3_bucket.athena-bucket.id}"
+      env                = "${var.env}"
+      project_name       = "${var.project_name}"
     }
   }
 }
@@ -63,14 +64,14 @@ resource "aws_lambda_function" "trigger_glue_crawler" {
   timeout          = 180
   environment {
     variables = {
-      glue_crawler_name = "${var.glue_crawler_name}"
+      glue_crawler_name        = "${var.glue_crawler_name}"
       glue_target_crawler_name = "${var.glue_target_crawler_name}"
     }
   }
 }
 
 resource "aws_lambda_function" "trigger_glue_job" {
-  s3_bucket = "${var.s3_bucket}"
+  s3_bucket        = "${var.s3_bucket}"
   s3_key           = "${aws_s3_bucket_object.file_upload.key}"
   function_name    = "trigger_glue_job"
   layers           = ["${aws_lambda_layer_version.lambda_python_deps_layer.arn}"]
