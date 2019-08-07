@@ -82,7 +82,6 @@ resource "aws_lambda_function" "trigger_glue_job" {
   timeout          = 180
 }
 
-
 resource "aws_api_gateway_rest_api" "api" {
   name        = "quote-api-gateway"
   description = "Quote Datalake API Gateway"

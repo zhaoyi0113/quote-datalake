@@ -104,6 +104,13 @@ resource "aws_iam_policy" "iam_policy" {
            "ssm:GetParametersByPath"
           ],
           "Resource": "*"
+        },
+        {
+          "Effect": "Allow",
+          "Action": [
+           "kms:*"
+          ],
+          "Resource": "*"
         }
   ]
 }

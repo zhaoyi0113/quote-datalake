@@ -16,11 +16,11 @@ S3_BUCKET = client.get_parameter(Name=paramBasePath + '/s3_bucket')['Parameter']
 ATHENA_RESULT_BUCKET = client.get_parameter(Name = paramBasePath + '/athena_bucket')['Parameter']['Value']
 ATHENA_DB_NAME = client.get_parameter(Name = paramBasePath + '/athena_catalog_db_name')['Parameter']['Value']
 
-print('parameters:',S3_BUCKET, ATHENA_RESULT_BUCKET, ATHENA_DB_NAME)
-
+PRAW_CLIENT_ID = client.get_parameter(Name = paramBasePath + '/praw_client_id', WithDecryption=True)['Parameter']['Value']
+PRAW_CLIENT_SECRET = client.get_parameter(Name = paramBasePath + '/praw_client_secret', WithDecryption=True)['Parameter']['Value']
 def createReddit():
-    reddit = praw.Reddit(client_id=os.environ['praw_client_id'],
-                         client_secret=os.environ['praw_client_secret'],
+    reddit = praw.Reddit(client_id=PRAW_CLIENT_ID,
+                         client_secret=PRAW_CLIENT_SECRET,
                          user_agent='lambda')
     return reddit
 
