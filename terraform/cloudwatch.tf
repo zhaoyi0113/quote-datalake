@@ -2,6 +2,7 @@ resource "aws_cloudwatch_event_rule" "every_one_minutes" {
   name                = "reddit_monitor_scheduler"
   description         = "Fires every one minutes"
   schedule_expression = "rate(30 minutes)"
+  is_enabled          = false
 }
 
 resource "aws_cloudwatch_event_target" "search_movies_reddit_every_one_minutes" {
