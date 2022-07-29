@@ -1,4 +1,4 @@
-scrapy==1.6.0
+scrapy==2.6.2
 praw
 jsons
 pandas
